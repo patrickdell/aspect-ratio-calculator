@@ -4,55 +4,55 @@
  * Single-threaded core — no SharedArrayBuffer / COOP/COEP headers required.
  */
 
-const FFMPEG_CDN = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
-const UTIL_CDN   = 'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js';
-const CORE_JS    = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js';
-const CORE_WASM  = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm';
+const FFMPEG_CDN = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.15/dist/esm/index.js';
+const UTIL_CDN   = 'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.2/dist/esm/index.js';
+const CORE_JS    = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.js';
+const CORE_WASM  = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.wasm';
 
 const BITRATE_PRESETS = [1500, 2000, 2250, 2500, 3000, 5000];
 const SIZE_PRESETS    = [3, 5, 10, 15, 20, 30]; // MB
 const QUALITY_MAP     = { low: 'fast', medium: 'medium', high: 'slow' };
-const ASSUMED_AUDIO_KBPS = 128; // assumed audio bitrate for target-size calc
+const ASSUMED_AUDIO_KBPS = 128;
 
 export function initCompressor() {
   // ── DOM refs ────────────────────────────────────────────────────────────
-  const dropzone       = document.getElementById('cmp-dropzone');
-  const fileInput      = document.getElementById('cmp-file-input');
-  const infoBox        = document.getElementById('cmp-info');
-  const modeRadios     = document.querySelectorAll('input[name="cmp-mode"]');
-  const bitrateSection = document.getElementById('cmp-bitrate-section');
-  const sizeSection    = document.getElementById('cmp-size-section');
-  const bitrateChips   = document.getElementById('cmp-bitrate-chips');
-  const sizeChips      = document.getElementById('cmp-size-chips');
+  const dropzone          = document.getElementById('cmp-dropzone');
+  const fileInput         = document.getElementById('cmp-file-input');
+  const infoBox           = document.getElementById('cmp-info');
+  const bitrateSection    = document.getElementById('cmp-bitrate-section');
+  const sizeSection       = document.getElementById('cmp-size-section');
+  const bitrateChips      = document.getElementById('cmp-bitrate-chips');
+  const sizeChips         = document.getElementById('cmp-size-chips');
   const customBitrateWrap = document.getElementById('cmp-custom-bitrate-wrap');
   const customBitrateInput = document.getElementById('cmp-custom-bitrate');
-  const customSizeWrap = document.getElementById('cmp-custom-size-wrap');
-  const customSizeInput = document.getElementById('cmp-custom-size');
-  const estSizeEl      = document.getElementById('cmp-est-size');
-  const qualityChips   = document.getElementById('cmp-quality-chips');
-  const compressBtn    = document.getElementById('cmp-compress-btn');
-  const progressWrap   = document.getElementById('cmp-progress-wrap');
-  const progressBar    = document.getElementById('cmp-progress-bar');
-  const progressLabel  = document.getElementById('cmp-progress-label');
-  const cancelBtn      = document.getElementById('cmp-cancel-btn');
+  const customSizeWrap    = document.getElementById('cmp-custom-size-wrap');
+  const customSizeInput   = document.getElementById('cmp-custom-size');
+  const estSizeEl         = document.getElementById('cmp-est-size');
+  const qualityChips      = document.getElementById('cmp-quality-chips');
+  const compressBtn       = document.getElementById('cmp-compress-btn');
+  const progressWrap      = document.getElementById('cmp-progress-wrap');
+  const progressBar       = document.getElementById('cmp-progress-bar');
+  const progressLabel     = document.getElementById('cmp-progress-label');
+  const cancelBtn         = document.getElementById('cmp-cancel-btn');
 
   // ── State ────────────────────────────────────────────────────────────────
-  let sourceFile     = null;
-  let sourceDuration = 0; // seconds
-  let selectedBitrate = BITRATE_PRESETS[1]; // 2000 kbps default
-  let selectedSizeMB  = SIZE_PRESETS[2];    // 10 MB default
+  let sourceFile      = null;
+  let sourceDuration  = 0;
+  let selectedBitrate = BITRATE_PRESETS[1]; // 2000 kbps
+  let selectedSizeMB  = SIZE_PRESETS[2];    // 10 MB
   let selectedQuality = 'medium';
   let ffmpegInstance  = null;
+  let fetchFileUtil   = null;   // set once on first load
   let encoding        = false;
+  let currentPass     = 1;
   let startTime       = 0;
   let timerInterval   = null;
 
-  // ── Build bitrate chips ─────────────────────────────────────────────────
+  // ── Build bitrate chips ──────────────────────────────────────────────────
   BITRATE_PRESETS.forEach(kbps => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'chip' + (kbps === selectedBitrate ? ' active' : '');
-    btn.textContent = kbps >= 1000 ? (kbps / 1000).toLocaleString('en', { maximumFractionDigits: 1 }) + ',000' : kbps;
     btn.textContent = kbps.toLocaleString('en') + ' kbps';
     btn.addEventListener('click', () => {
       customBitrateWrap.style.display = 'none';
@@ -62,7 +62,7 @@ export function initCompressor() {
     });
     bitrateChips.appendChild(btn);
   });
-  // Custom bitrate chip
+
   const customBitrateChip = document.createElement('button');
   customBitrateChip.type = 'button';
   customBitrateChip.className = 'chip';
@@ -79,7 +79,7 @@ export function initCompressor() {
     if (v > 0) { selectedBitrate = v; updateEstSize(); }
   });
 
-  // ── Build size chips ────────────────────────────────────────────────────
+  // ── Build size chips ─────────────────────────────────────────────────────
   SIZE_PRESETS.forEach(mb => {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -92,6 +92,7 @@ export function initCompressor() {
     });
     sizeChips.appendChild(btn);
   });
+
   const customSizeChip = document.createElement('button');
   customSizeChip.type = 'button';
   customSizeChip.className = 'chip';
@@ -123,19 +124,20 @@ export function initCompressor() {
   });
 
   // ── Mode radio switching ─────────────────────────────────────────────────
-  modeRadios.forEach(r => r.addEventListener('change', () => {
-    const mode = document.querySelector('input[name="cmp-mode"]:checked').value;
-    bitrateSection.style.display = mode === 'bitrate' ? '' : 'none';
-    sizeSection.style.display    = mode === 'size'    ? '' : 'none';
-    estSizeEl.style.display      = mode === 'bitrate' ? '' : 'none';
-    updateEstSize();
-  }));
+  document.querySelectorAll('input[name="cmp-mode"]').forEach(r =>
+    r.addEventListener('change', () => {
+      const mode = document.querySelector('input[name="cmp-mode"]:checked').value;
+      bitrateSection.style.display = mode === 'bitrate' ? '' : 'none';
+      sizeSection.style.display    = mode === 'size'    ? '' : 'none';
+      estSizeEl.style.display      = mode === 'bitrate' ? '' : 'none';
+      updateEstSize();
+    })
+  );
 
   // ── Dropzone ─────────────────────────────────────────────────────────────
   dropzone.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
-
-  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+  dropzone.addEventListener('dragover',  e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
   dropzone.addEventListener('drop', e => {
     e.preventDefault();
@@ -144,7 +146,7 @@ export function initCompressor() {
     if (f && f.type.startsWith('video/')) loadFile(f);
   });
 
-  // ── Load file — probe duration via <video> ───────────────────────────────
+  // ── Load file ─────────────────────────────────────────────────────────────
   function loadFile(file) {
     sourceFile = file;
     const url = URL.createObjectURL(file);
@@ -152,7 +154,7 @@ export function initCompressor() {
     vid.preload = 'metadata';
     vid.src = url;
     vid.addEventListener('loadedmetadata', () => {
-      sourceDuration = vid.duration;
+      sourceDuration = isFinite(vid.duration) ? vid.duration : 0;
       URL.revokeObjectURL(url);
       showInfo(file, vid);
       updateEstSize();
@@ -160,7 +162,6 @@ export function initCompressor() {
     });
     vid.addEventListener('error', () => {
       URL.revokeObjectURL(url);
-      // Duration unknown — show info without it
       sourceDuration = 0;
       showInfo(file, null);
       compressBtn.disabled = false;
@@ -169,10 +170,10 @@ export function initCompressor() {
 
   function showInfo(file, vid) {
     const sizeMB = (file.size / 1048576).toFixed(1);
-    const dur = vid && isFinite(vid.duration) ? formatDuration(vid.duration) : '—';
-    const res = vid && vid.videoWidth ? vid.videoWidth + ' × ' + vid.videoHeight + ' px' : '—';
-    const kbps = vid && isFinite(vid.duration) && vid.duration > 0
-      ? Math.round(file.size * 8 / 1000 / vid.duration) + ' kbps'
+    const dur    = vid && isFinite(vid.duration) ? formatDuration(vid.duration) : '—';
+    const res    = vid && vid.videoWidth ? vid.videoWidth + ' × ' + vid.videoHeight + ' px' : '—';
+    const kbps   = sourceDuration > 0
+      ? Math.round(file.size * 8 / 1000 / sourceDuration) + ' kbps'
       : '—';
     infoBox.innerHTML =
       '<div class="cmp-info-grid">' +
@@ -195,6 +196,34 @@ export function initCompressor() {
     estSizeEl.textContent = 'Estimated output: ~' + mb + ' MB';
   }
 
+  // ── Lazy-load FFmpeg ──────────────────────────────────────────────────────
+  async function ensureFFmpeg() {
+    if (ffmpegInstance) return ffmpegInstance;
+
+    setProgress(0, 'Loading encoder (~30 MB, cached after first use)…');
+
+    const [{ FFmpeg }, { fetchFile, toBlobURL }] = await Promise.all([
+      import(FFMPEG_CDN),
+      import(UTIL_CDN),
+    ]);
+    fetchFileUtil = fetchFile;
+
+    const ff = new FFmpeg();
+    const coreURL = await toBlobURL(CORE_JS,   'text/javascript');
+    const wasmURL = await toBlobURL(CORE_WASM, 'application/wasm');
+    await ff.load({ coreURL, wasmURL });
+
+    ff.on('progress', ({ progress }) => {
+      const pct = Math.round(Math.min(Math.max(progress, 0), 1) * 100);
+      const cur  = currentPass === 1 ? Math.round(pct * 0.4) : 40 + Math.round(pct * 0.6);
+      const lbl  = currentPass === 1 ? 'Pass 1 of 2 — analysing…' : 'Pass 2 of 2 — encoding…';
+      setProgress(cur, lbl);
+    });
+
+    ffmpegInstance = ff;
+    return ff;
+  }
+
   // ── Compress ─────────────────────────────────────────────────────────────
   compressBtn.addEventListener('click', startCompress);
 
@@ -207,65 +236,35 @@ export function initCompressor() {
     if (mode === 'bitrate') {
       videoBitrateKbps = selectedBitrate;
     } else {
-      // Target size mode — calculate required video bitrate
       if (!sourceDuration || sourceDuration <= 0) {
-        alert('Could not determine video duration — please use Bitrate mode instead.');
+        alert('Could not determine video duration — use Bitrate mode instead.');
         return;
       }
       const targetBytes = selectedSizeMB * 1048576;
-      videoBitrateKbps = Math.max(200, Math.round(
-        (targetBytes * 8 / 1000 / sourceDuration) - ASSUMED_AUDIO_KBPS
-      ));
+      videoBitrateKbps = Math.max(200,
+        Math.round((targetBytes * 8 / 1000 / sourceDuration) - ASSUMED_AUDIO_KBPS)
+      );
     }
 
     const preset2 = QUALITY_MAP[selectedQuality];
 
-    // Show progress UI
     encoding = true;
     compressBtn.disabled = true;
     progressWrap.style.display = '';
-    setProgress(0, 'Pass 1 of 2 — analysing…');
+    setProgress(0, 'Preparing…');
     startTime = Date.now();
     timerInterval = setInterval(updateTimer, 500);
 
     try {
-      // Lazy-load FFmpeg on first use
-      if (!ffmpegInstance) {
-        setProgress(0, 'Loading encoder (~8 MB, cached after first use)…');
-        const [{ FFmpeg }, { fetchFile, toBlobURL }] = await Promise.all([
-          import(FFMPEG_CDN),
-          import(UTIL_CDN),
-        ]);
-        window._cmpFetchFile = fetchFile;
-        window._cmpToBlobURL = toBlobURL;
-        ffmpegInstance = new FFmpeg();
-        const coreURL = await toBlobURL(CORE_JS,   'text/javascript');
-        const wasmURL = await toBlobURL(CORE_WASM, 'application/wasm');
-        await ffmpegInstance.load({ coreURL, wasmURL });
+      const ff = await ensureFFmpeg();
 
-        ffmpegInstance.on('progress', ({ progress }) => {
-          const pct = Math.round(Math.min(progress, 1) * 100);
-          // pass 1 maps to 0-40%, pass 2 to 40-100%
-          const cur = currentPass === 1
-            ? Math.round(pct * 0.4)
-            : 40 + Math.round(pct * 0.6);
-          const passLabel = currentPass === 1
-            ? 'Pass 1 of 2 — analysing…'
-            : 'Pass 2 of 2 — encoding…';
-          setProgress(cur, passLabel);
-        });
-      }
-
-      const ffmpeg = ffmpegInstance;
-      const { fetchFile } = { fetchFile: window._cmpFetchFile };
-
-      // Write input file to WASM FS
+      // Write source into WASM virtual FS
       setProgress(0, 'Pass 1 of 2 — analysing…');
-      await ffmpeg.writeFile('input.mp4', await fetchFile(sourceFile));
+      await ff.writeFile('input.mp4', await fetchFileUtil(sourceFile));
 
-      // ── Pass 1: turbo analysis ─────────────────────────────────────────
+      // Pass 1 — turbo analysis
       currentPass = 1;
-      await ffmpeg.exec([
+      await ff.exec([
         '-y', '-i', 'input.mp4',
         '-c:v', 'libx264', '-b:v', videoBitrateKbps + 'k',
         '-preset', 'ultrafast',
@@ -273,10 +272,10 @@ export function initCompressor() {
         '-an', '-f', 'null', '/dev/null',
       ]);
 
-      // ── Pass 2: real encode ────────────────────────────────────────────
+      // Pass 2 — real encode
       currentPass = 2;
       setProgress(40, 'Pass 2 of 2 — encoding…');
-      await ffmpeg.exec([
+      await ff.exec([
         '-y', '-i', 'input.mp4',
         '-c:v', 'libx264', '-b:v', videoBitrateKbps + 'k',
         '-preset', preset2,
@@ -285,28 +284,29 @@ export function initCompressor() {
         'output.mp4',
       ]);
 
-      // Read result and trigger download
-      const data = await ffmpeg.readFile('output.mp4');
-      const blob = new Blob([data.buffer], { type: 'video/mp4' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
+      // Download result
+      const data     = await ff.readFile('output.mp4');
+      const blob     = new Blob([data.buffer], { type: 'video/mp4' });
+      const url      = URL.createObjectURL(blob);
+      const a        = document.createElement('a');
       const baseName = sourceFile.name.replace(/\.[^.]+$/, '');
-      a.href     = url;
-      a.download = baseName + '_compressed.mp4';
+      a.href         = url;
+      a.download     = baseName + '_compressed.mp4';
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 10000);
 
       setProgress(100, 'Done!');
-      setTimeout(() => { progressWrap.style.display = 'none'; }, 2000);
+      setTimeout(() => { progressWrap.style.display = 'none'; }, 2500);
 
     } catch (err) {
-      if (err?.message?.includes('exit') || err?.message?.includes('abort')) {
+      const msg = (err?.message || String(err));
+      if (msg.includes('exit') || msg.includes('abort') || msg.includes('terminated')) {
         setProgress(0, 'Cancelled.');
       } else {
         console.error('[compressor]', err);
-        setProgress(0, 'Error: ' + (err.message || err));
+        setProgress(0, 'Error: ' + msg);
       }
-      setTimeout(() => { progressWrap.style.display = 'none'; }, 2500);
+      setTimeout(() => { progressWrap.style.display = 'none'; }, 3000);
     } finally {
       clearInterval(timerInterval);
       encoding = false;
@@ -314,12 +314,11 @@ export function initCompressor() {
     }
   }
 
-  let currentPass = 1;
-
   cancelBtn.addEventListener('click', () => {
     if (ffmpegInstance && encoding) {
       ffmpegInstance.terminate();
       ffmpegInstance = null;
+      fetchFileUtil  = null;
     }
   });
 
@@ -330,10 +329,10 @@ export function initCompressor() {
   }
 
   function updateTimer() {
-    const s = Math.round((Date.now() - startTime) / 1000);
-    const m = Math.floor(s / 60);
+    const s   = Math.round((Date.now() - startTime) / 1000);
+    const m   = Math.floor(s / 60);
     const sec = s % 60;
-    const el = document.getElementById('cmp-elapsed');
+    const el  = document.getElementById('cmp-elapsed');
     if (el) el.textContent = m + ':' + String(sec).padStart(2, '0');
   }
 
@@ -343,8 +342,8 @@ export function initCompressor() {
   }
 
   function formatDuration(s) {
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
+    const h   = Math.floor(s / 3600);
+    const m   = Math.floor((s % 3600) / 60);
     const sec = Math.floor(s % 60);
     return h > 0
       ? h + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0')
