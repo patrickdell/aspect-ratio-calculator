@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aspect Ratio Calculator</title>
+  <title>Visuals Toolset</title>
   <base href="/v2/" />
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -20,6 +20,8 @@
       border-radius: 8px;
       padding: 10px 12px;
     }
+
+    .info-box { background: var(--code-bg); }
 
     /* Version pill */
     .ver-pill {
@@ -39,14 +41,23 @@
 
   <!-- ── Header / tabs ───────────────────────────────────────────── -->
   <header class="app-header">
-    <h1 class="app-title">Aspect Ratio Calculator</h1>
+    <h1 class="app-title">Visuals Toolset</h1>
     <nav class="tabs">
-      <button class="tab-btn" data-tab="calc">Calculator</button>
+      <button class="tab-btn" data-tab="embed">Embed</button>
+      <button class="tab-btn" data-tab="calc">Aspect Ratio</button>
       <button class="tab-btn" data-tab="crop">Crop &amp; Export</button>
     </nav>
     <span class="ver-pill">v2</span>
     <a class="v1-link" href="/v1/index.html">v1 &rarr;</a>
   </header>
+
+  <!-- ── Embed panel ─────────────────────────────────────────────── -->
+  <section id="panel-embed">
+    <div class="wrap">
+      <div class="svc-bar" id="embedTabBar"></div>
+      <div id="embedPanels"></div>
+    </div>
+  </section>
 
   <!-- ── Calculator panel ────────────────────────────────────────── -->
   <section id="panel-calc">

@@ -5,6 +5,7 @@
 import { PRESETS, initCalculator } from './calculator.js';
 import { initCropper }             from './cropper.js';
 import { initExporter }            from './exporter.js';
+import { initEmbed }               from './embed.js';
 
 // ── Build preset chips ────────────────────────────────────────────────────
 
@@ -30,17 +31,16 @@ function syncChips(container, preset) {
 
 // ── Tab switching ─────────────────────────────────────────────────────────
 
-const tabBtns   = document.querySelectorAll('.tab-btn');
-const panelCalc = document.getElementById('panel-calc');
-const panelCrop = document.getElementById('panel-crop');
+const tabBtns = document.querySelectorAll('.tab-btn');
+const panels  = { embed: 'panel-embed', calc: 'panel-calc', crop: 'panel-crop' };
 
 tabBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     tabBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const tab = btn.dataset.tab;
-    panelCalc.classList.toggle('visible', tab === 'calc');
-    panelCrop.classList.toggle('visible', tab === 'crop');
+    Object.values(panels).forEach(id => document.getElementById(id).classList.remove('visible'));
+    document.getElementById(panels[tab]).classList.add('visible');
     localStorage.setItem('ar_tab', tab);
   });
 });
@@ -50,6 +50,7 @@ tabBtns.forEach(btn => {
 const calcChips = document.getElementById('calcChips');
 const cropChips = document.getElementById('cropChips');
 
+initEmbed();
 const calculator = initCalculator({ onRatioChange: () => {} });
 const cropper    = initCropper({ onCropChange: () => exporter.setEnabled(cropper.isLoaded()) });
 const exporter   = initExporter({ getCropState: () => cropper.getCropState() });
@@ -80,7 +81,6 @@ if (savedPreset) {
   selectRatio(activePreset);
 }
 
-const savedTab = localStorage.getItem('ar_tab') || 'calc';
-const savedTabBtn = document.querySelector('.tab-btn[data-tab="' + savedTab + '"]');
-if (savedTabBtn) savedTabBtn.click();
-else document.querySelector('.tab-btn[data-tab="calc"]').click();
+const savedTab = localStorage.getItem('ar_tab') || 'embed';
+const savedTabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+(savedTabBtn || document.querySelector('.tab-btn[data-tab="embed"]')).click();
