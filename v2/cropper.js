@@ -25,9 +25,10 @@ export function initCropper({ onCropChange }) {
   const ctx = canvas.getContext('2d');
 
   const state = {
-    bitmap:   null,
-    naturalW: 0,
-    naturalH: 0,
+    bitmap:       null,
+    naturalW:     0,
+    naturalH:     0,
+    sourceBuffer: null, // original file ArrayBuffer for EXIF passthrough
     ratio:    { w: 3, h: 2 },
     crop:     { x: 0, y: 0, w: 0, h: 0 }, // image-space
     // Computed each render from canvas CSS size:
@@ -44,11 +45,15 @@ export function initCropper({ onCropChange }) {
   async function loadFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
     try {
-      const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-      state.bitmap   = bitmap;
-      state.naturalW = bitmap.width;
-      state.naturalH = bitmap.height;
-      state.loaded   = true;
+      const [bitmap, srcBuf] = await Promise.all([
+        createImageBitmap(file, { imageOrientation: 'from-image' }),
+        file.arrayBuffer(),
+      ]);
+      state.bitmap       = bitmap;
+      state.naturalW     = bitmap.width;
+      state.naturalH     = bitmap.height;
+      state.sourceBuffer = srcBuf;
+      state.loaded       = true;
 
       dropzone.classList.add('hidden');
       canvas.parentElement.style.display = 'block';
@@ -242,7 +247,7 @@ export function initCropper({ onCropChange }) {
   canvas.addEventListener('pointercancel', endDrag);
 
   function endDrag(e) {
-    if (state.drag) { state.drag = null; notifyCropChange(); }
+    state.drag = null; // notifyCropChange() already called during render() on each pointermove
   }
 
   function cursorForHandle(id) {
@@ -439,10 +444,11 @@ export function initCropper({ onCropChange }) {
 
   function getCropState() {
     return {
-      bitmap:   state.bitmap,
-      naturalW: state.naturalW,
-      naturalH: state.naturalH,
-      crop:     { ...state.crop },
+      bitmap:       state.bitmap,
+      naturalW:     state.naturalW,
+      naturalH:     state.naturalH,
+      sourceBuffer: state.sourceBuffer,
+      crop:         { ...state.crop },
     };
   }
 

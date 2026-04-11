@@ -83,11 +83,37 @@
 
       </div><!-- /card -->
 
-      <!-- Reference visual -->
+      <!-- Reference visual (inlined to avoid path resolution issues) -->
       <div class="reference-visual">
         <h3>Shape reference</h3>
-        <img src="assets/ratio-reference.svg"
-             alt="Five phone mockups showing 3:2, 4:3, 1:1, 4:5 and 2:3 crop boxes" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 530 240" role="img" aria-label="Mobile aspect ratio shapes reference" style="width:100%;max-width:530px;height:auto;display:block;">
+          <style>text{font-family:system-ui,-apple-system,Helvetica,Arial,sans-serif}.label-ratio{font-size:13px;font-weight:700;fill:#e8eefc;text-anchor:middle}.label-desc{font-size:10px;fill:#9fb0d1;text-anchor:middle}</style>
+          <g transform="translate(10,10)">
+            <rect width="90" height="170" rx="12" fill="#252a36"/><rect x="6" y="22" width="78" height="138" fill="#0f1115"/><rect x="33" y="13" width="24" height="6" rx="3" fill="#0f1115"/>
+            <rect x="6" y="59" width="78" height="52" fill="#da161f" fill-opacity=".18" stroke="#DA161F" stroke-width="1.5"/>
+            <text class="label-ratio" x="45" y="192">3:2</text><text class="label-desc" x="45" y="206">Standard landscape</text><text class="label-desc" x="45" y="218">classic photo</text>
+          </g>
+          <g transform="translate(110,10)">
+            <rect width="90" height="170" rx="12" fill="#252a36"/><rect x="6" y="22" width="78" height="138" fill="#0f1115"/><rect x="33" y="13" width="24" height="6" rx="3" fill="#0f1115"/>
+            <rect x="6" y="52" width="78" height="58" fill="#da161f" fill-opacity=".18" stroke="#DA161F" stroke-width="1.5"/>
+            <text class="label-ratio" x="45" y="192">4:3</text><text class="label-desc" x="45" y="206">Horizontal rectangle,</text><text class="label-desc" x="45" y="218">slightly taller than 3:2</text>
+          </g>
+          <g transform="translate(210,10)">
+            <rect width="90" height="170" rx="12" fill="#252a36"/><rect x="6" y="22" width="78" height="138" fill="#0f1115"/><rect x="33" y="13" width="24" height="6" rx="3" fill="#0f1115"/>
+            <rect x="6" y="53" width="78" height="78" fill="#da161f" fill-opacity=".18" stroke="#DA161F" stroke-width="1.5"/>
+            <text class="label-ratio" x="45" y="192">1:1</text><text class="label-desc" x="45" y="206">Square</text>
+          </g>
+          <g transform="translate(310,10)">
+            <rect width="90" height="170" rx="12" fill="#252a36"/><rect x="6" y="22" width="78" height="138" fill="#0f1115"/><rect x="33" y="13" width="24" height="6" rx="3" fill="#0f1115"/>
+            <rect x="6" y="43" width="78" height="98" fill="#da161f" fill-opacity=".18" stroke="#DA161F" stroke-width="1.5"/>
+            <text class="label-ratio" x="45" y="192">4:5</text><text class="label-desc" x="45" y="206">Vertical rectangle,</text><text class="label-desc" x="45" y="218">popular Instagram shape</text>
+          </g>
+          <g transform="translate(410,10)">
+            <rect width="90" height="170" rx="12" fill="#252a36"/><rect x="6" y="22" width="78" height="138" fill="#0f1115"/><rect x="33" y="13" width="24" height="6" rx="3" fill="#0f1115"/>
+            <rect x="6" y="34" width="78" height="117" fill="#da161f" fill-opacity=".18" stroke="#DA161F" stroke-width="1.5"/>
+            <text class="label-ratio" x="45" y="192">2:3</text><text class="label-desc" x="45" y="206">Vertical, tallest</text><text class="label-desc" x="45" y="218">classic photo shape</text>
+          </g>
+        </svg>
       </div>
 
     </div><!-- /wrap -->
@@ -132,10 +158,13 @@
           </div>
 
           <div class="card sidebar-section">
-            <p class="sidebar-label chips-label">Output resolution (long edge)</p>
+            <p class="sidebar-label chips-label">Output resolution</p>
             <div class="res-options">
               <label class="res-option">
-                <input type="radio" name="resolution" value="1080" checked /> 1080 px
+                <input type="radio" name="resolution" value="native" checked /> Native (crop size)
+              </label>
+              <label class="res-option">
+                <input type="radio" name="resolution" value="1080" /> 1080 px
               </label>
               <label class="res-option">
                 <input type="radio" name="resolution" value="1500" /> 1500 px
