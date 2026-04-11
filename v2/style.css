@@ -284,6 +284,26 @@ body {
 .res-option { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 .res-option input[type=radio] { accent-color: var(--accent); }
 
+.custom-ratio-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.custom-ratio-row input {
+  width: 54px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--code-bg);
+  color: var(--ink);
+  font-size: 13px;
+  outline: none;
+  text-align: center;
+}
+.custom-ratio-row input:focus { border-color: var(--accent); }
+.custom-ratio-row span { color: var(--muted); font-size: 14px; font-weight: 600; }
+
 .custom-res-wrap { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .custom-res-wrap input[type=number] {
   width: 80px;

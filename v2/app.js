@@ -63,6 +63,8 @@ function selectRatio(preset) {
   activePreset = preset;
   syncChips(calcChips, preset);
   syncChips(cropChips, preset);
+  customChip.classList.remove('active');
+  customRatioRow.style.display = 'none';
   calculator.setPreset(preset);
   cropper.setRatio(preset);
   localStorage.setItem('ar_preset', preset.label);
@@ -70,6 +72,38 @@ function selectRatio(preset) {
 
 buildChips(calcChips, selectRatio);
 buildChips(cropChips, selectRatio);
+
+// ── Custom ratio chip (crop panel only) ───────────────────────────────────
+
+const customChip = document.createElement('button');
+customChip.type = 'button';
+customChip.className = 'chip';
+customChip.textContent = 'Custom';
+cropChips.appendChild(customChip);
+
+const customRatioRow = document.getElementById('customRatioRow');
+const customRatioW   = document.getElementById('customRatioW');
+const customRatioH   = document.getElementById('customRatioH');
+
+function applyCustomRatio() {
+  const w = Number(customRatioW.value);
+  const h = Number(customRatioH.value);
+  if (!w || !h || w <= 0 || h <= 0) return;
+  cropChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  customChip.classList.add('active');
+  cropper.setRatio({ label: w + ':' + h, w, h });
+}
+
+customChip.addEventListener('click', () => {
+  cropChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  customChip.classList.add('active');
+  customRatioRow.style.display = 'flex';
+  applyCustomRatio();
+  customRatioW.focus();
+});
+
+customRatioW.addEventListener('input', applyCustomRatio);
+customRatioH.addEventListener('input', applyCustomRatio);
 
 // ── Restore persisted state ───────────────────────────────────────────────
 
