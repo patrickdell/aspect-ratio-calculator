@@ -564,6 +564,85 @@ input[type="color"] {
   overflow: hidden;
 }
 
+/* ── Compressor panel ────────────────────────── */
+.cmp-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  max-width: 680px;
+}
+
+.cmp-dropzone { cursor: pointer; }
+.cmp-dropzone.drag-over { border-color: var(--accent); background: var(--card2); }
+.cmp-dropzone.has-file .cmp-drop-text { color: var(--ink); font-weight: 500; }
+
+.cmp-info { display: grid; }
+.cmp-info-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  font-size: 13px;
+}
+.cmp-info-label { color: var(--muted); }
+
+.cmp-mode-row { display: flex; gap: 20px; }
+
+.cmp-chip-row { flex-wrap: wrap; }
+
+.cmp-est-size {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+  min-height: 18px;
+}
+
+.cmp-quality-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+
+.cmp-audio-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--code-bg);
+}
+
+.cmp-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cmp-progress-track {
+  height: 8px;
+  background: var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cmp-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.cmp-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cmp-elapsed { color: var(--muted); }
+
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 680px) {
   .app-header { padding: 0 14px; gap: 12px; }

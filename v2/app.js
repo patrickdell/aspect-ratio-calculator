@@ -6,6 +6,7 @@ import { PRESETS, initCalculator } from './calculator.js';
 import { initCropper }             from './cropper.js';
 import { initExporter }            from './exporter.js';
 import { initEmbed }               from './embed.js';
+import { initCompressor }          from './compressor.js';
 
 // ── Build preset chips ────────────────────────────────────────────────────
 
@@ -32,7 +33,7 @@ function syncChips(container, preset) {
 // ── Tab switching ─────────────────────────────────────────────────────────
 
 const tabBtns = document.querySelectorAll('.tab-btn');
-const panels  = { embed: 'panel-embed', calc: 'panel-calc', crop: 'panel-crop' };
+const panels  = { embed: 'panel-embed', calc: 'panel-calc', crop: 'panel-crop', compress: 'panel-compress' };
 
 tabBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -51,6 +52,7 @@ const calcChips = document.getElementById('calcChips');
 const cropChips = document.getElementById('cropChips');
 
 initEmbed();
+initCompressor();
 const calculator = initCalculator({ onRatioChange: () => {} });
 const cropper    = initCropper({ onCropChange: () => exporter.setEnabled(cropper.isLoaded()) });
 const exporter   = initExporter({ getCropState: () => cropper.getCropState() });

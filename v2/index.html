@@ -40,6 +40,7 @@
       <button class="tab-btn" data-tab="embed">Embed</button>
       <button class="tab-btn" data-tab="calc">Aspect Ratio</button>
       <button class="tab-btn" data-tab="crop">Crop &amp; Export</button>
+      <button class="tab-btn" data-tab="compress">Compressor</button>
     </nav>
     <span class="privacy-note">All processing happens in your browser</span>
   </header>
@@ -225,6 +226,89 @@
 
         </aside>
       </div>
+    </div>
+  </section>
+
+  <!-- ── Compressor panel ───────────────────────────────────────────── -->
+  <section id="panel-compress">
+    <div class="wrap">
+      <div class="cmp-layout">
+
+        <!-- Drop zone -->
+        <div id="cmp-dropzone" class="dropzone card cmp-dropzone">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M15 10l-4 4-4-4"/><path d="M11 14V3"/><rect x="2" y="14" width="20" height="8" rx="2"/>
+          </svg>
+          <div class="cmp-drop-text">Drop a video here, or click to browse</div>
+          <div class="dropzone-hint">Supports MP4, MOV, MKV, WebM, AVI &mdash; all processing happens locally</div>
+          <input id="cmp-file-input" type="file" accept="video/*" hidden />
+        </div>
+
+        <!-- Source info -->
+        <div id="cmp-info" class="card info-box cmp-info" style="display:none"></div>
+
+        <!-- Settings -->
+        <div class="card sidebar-section">
+          <p class="chips-label">Mode</p>
+          <div class="cmp-mode-row">
+            <label class="res-option"><input type="radio" name="cmp-mode" value="bitrate" checked /> Bitrate</label>
+            <label class="res-option"><input type="radio" name="cmp-mode" value="size" /> Target size</label>
+          </div>
+        </div>
+
+        <!-- Bitrate section -->
+        <div id="cmp-bitrate-section" class="card sidebar-section">
+          <p class="chips-label">Target bitrate</p>
+          <div id="cmp-bitrate-chips" class="chip-row cmp-chip-row"></div>
+          <div id="cmp-custom-bitrate-wrap" class="custom-ratio-row" style="display:none">
+            <input id="cmp-custom-bitrate" type="number" min="100" max="50000" placeholder="kbps" style="width:80px">
+            <span>kbps</span>
+          </div>
+          <div id="cmp-est-size" class="cmp-est-size"></div>
+        </div>
+
+        <!-- Target size section -->
+        <div id="cmp-size-section" class="card sidebar-section" style="display:none">
+          <p class="chips-label">Target file size</p>
+          <div id="cmp-size-chips" class="chip-row cmp-chip-row"></div>
+          <div id="cmp-custom-size-wrap" class="custom-ratio-row" style="display:none">
+            <input id="cmp-custom-size" type="number" min="1" max="10000" placeholder="MB" style="width:70px">
+            <span>MB</span>
+          </div>
+        </div>
+
+        <!-- Quality -->
+        <div class="card sidebar-section">
+          <p class="chips-label">Quality</p>
+          <div id="cmp-quality-chips" class="chip-row"></div>
+          <p class="cmp-quality-note">Higher quality takes longer to encode. Pass 1 is always turbo.</p>
+        </div>
+
+        <!-- Audio note -->
+        <div class="cmp-audio-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Audio is copied without re-encoding (lossless, fast)
+        </div>
+
+        <!-- Compress button -->
+        <div class="sidebar-section">
+          <button id="cmp-compress-btn" class="export-btn" disabled>Compress &amp; Download</button>
+        </div>
+
+        <!-- Progress -->
+        <div id="cmp-progress-wrap" class="cmp-progress-wrap" style="display:none">
+          <div class="cmp-progress-track">
+            <div id="cmp-progress-bar" class="cmp-progress-bar" style="width:0%"></div>
+          </div>
+          <div class="cmp-progress-meta">
+            <span id="cmp-progress-label">Preparing…</span>
+            <span class="cmp-elapsed">Elapsed: <span id="cmp-elapsed">0:00</span></span>
+          </div>
+          <button id="cmp-cancel-btn" class="text-btn">Cancel</button>
+        </div>
+
+      </div><!-- /cmp-layout -->
     </div>
   </section>
 
