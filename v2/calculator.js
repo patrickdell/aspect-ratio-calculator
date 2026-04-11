@@ -71,7 +71,7 @@ export function initCalculator({ onRatioChange }) {
     resultEl.textContent = W + ' \xd7 ' + H + ' px';
     resultEl.dataset.copy = W + ' × ' + H + ' px';
     resultEl.classList.add('copyable');
-    metaEl.textContent = 'Ratio ' + currentPreset.label + ' \u2014 multiply by any factor to scale up';
+    metaEl.textContent = 'Ratio ' + currentPreset.label;
   }
 
   function handleWidthInput() {
