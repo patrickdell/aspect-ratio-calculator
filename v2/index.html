@@ -23,18 +23,12 @@
 
     .info-box { background: var(--code-bg); }
 
-    /* Version pill */
-    .ver-pill {
+    .privacy-note {
       font-size: 11px;
-      background: var(--line);
-      border-radius: 999px;
-      padding: 2px 8px;
       color: var(--muted);
       margin-left: auto;
+      white-space: nowrap;
     }
-
-    .v1-link { font-size: 12px; color: var(--muted); text-decoration: none; }
-    .v1-link:hover { color: var(--ink); }
   </style>
 </head>
 <body>
@@ -47,8 +41,7 @@
       <button class="tab-btn" data-tab="calc">Aspect Ratio</button>
       <button class="tab-btn" data-tab="crop">Crop &amp; Export</button>
     </nav>
-    <span class="ver-pill">v2</span>
-    <a class="v1-link" href="/v1/index.html">v1 &rarr;</a>
+    <span class="privacy-note">All processing happens in your browser</span>
   </header>
 
   <!-- ── Embed panel ─────────────────────────────────────────────── -->
