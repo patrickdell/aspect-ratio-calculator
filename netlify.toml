@@ -1,18 +1,6 @@
 [build]
   publish = "."
-  command = """
-    mkdir -p v2/lib/ffmpeg &&
-    BASE_FF=https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/esm &&
-    BASE_CORE=https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm &&
-    BASE_UTIL=https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm &&
-    curl -fsSL -o v2/lib/ffmpeg/index.js      $BASE_FF/index.js &&
-    curl -fsSL -o v2/lib/ffmpeg/worker.js     $BASE_FF/worker.js &&
-    curl -fsSL -o v2/lib/ffmpeg/const.js      $BASE_FF/const.js &&
-    curl -fsSL -o v2/lib/ffmpeg/errors.js     $BASE_FF/errors.js &&
-    curl -fsSL -o v2/lib/ffmpeg/util.js       $BASE_UTIL/index.js &&
-    curl -fsSL -o v2/lib/ffmpeg/ffmpeg-core.js   $BASE_CORE/ffmpeg-core.js &&
-    curl -fsSL -o v2/lib/ffmpeg/ffmpeg-core.wasm $BASE_CORE/ffmpeg-core.wasm
-  """
+  command = "npm run build"
 
 [[redirects]]
   from = "/"
