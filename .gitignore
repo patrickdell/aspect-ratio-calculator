@@ -2,5 +2,4 @@
 Thumbs.db
 *.log
 .env
-# FFmpeg.wasm files — downloaded at build time, not stored in git
-lib/
+# lib/ffmpeg/ is downloaded at build time — NOT gitignored so Cloudflare Pages serves it
