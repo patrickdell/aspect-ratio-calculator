@@ -216,9 +216,7 @@ export function initCompressor() {
 
       ff.on('progress', ({ progress }) => {
         const pct = Math.round(Math.min(Math.max(progress, 0), 1) * 100);
-        const cur = currentPass === 1 ? Math.round(pct * 0.4) : 40 + Math.round(pct * 0.6);
-        const lbl = currentPass === 1 ? 'Pass 1 of 2 — analyzing…' : 'Pass 2 of 2 — encoding…';
-        setProgress(cur, lbl);
+        setProgress(10 + Math.round(pct * 0.88), 'Encoding… ' + pct + '%');
       });
 
       // worker.js is same-origin so FFmpeg's default Worker spawn works fine.
@@ -264,7 +262,7 @@ export function initCompressor() {
       );
     }
 
-    const preset2 = QUALITY_MAP[selectedQuality];
+    const qualityPreset = QUALITY_MAP[selectedQuality];
 
     encoding = true;
     compressBtn.disabled = true;
@@ -276,38 +274,26 @@ export function initCompressor() {
     try {
       const ff = await startLoad();
 
+      setProgress(5, 'Reading file…');
       await ff.writeFile('input.mp4', await fetchFileUtil(sourceFile));
 
-      // Pass 1 — turbo analysis
-      // Note: /dev/null doesn't exist in FFmpeg.wasm's virtual FS.
-      // Write to a real file and delete it after — pass 1 output is throwaway.
+      // Single-pass CBR encode — two-pass passlog persistence is unreliable
+      // in FFmpeg.wasm's virtual filesystem across exec() calls.
       currentPass = 1;
-      setProgress(0, 'Pass 1 of 2 — analyzing…');
-      await ff.exec([
+      setProgress(10, 'Encoding…');
+      const ret = await ff.exec([
         '-y', '-i', 'input.mp4',
-        '-c:v', 'libx264', '-b:v', videoBitrateKbps + 'k',
-        '-preset', 'ultrafast',
-        '-pass', '1', '-passlogfile', 'ffmpeg2pass',
-        '-an', '-f', 'null', 'pass1.mp4',
-      ]);
-      // Clean up throwaway pass-1 output (ignore errors if it wasn't created)
-      try { await ff.deleteFile('pass1.mp4'); } catch (_) {}
-
-      // Pass 2 — real encode
-      currentPass = 2;
-      setProgress(40, 'Pass 2 of 2 — encoding…');
-      await ff.exec([
-        '-y', '-i', 'input.mp4',
-        '-c:v', 'libx264', '-b:v', videoBitrateKbps + 'k',
-        '-preset', preset2,
-        '-pass', '2', '-passlogfile', 'ffmpeg2pass',
+        '-c:v', 'libx264',
+        '-b:v', videoBitrateKbps + 'k',
+        '-preset', qualityPreset,
         '-c:a', 'copy',
         'output.mp4',
       ]);
+      if (ret !== 0) throw new Error('FFmpeg exited with code ' + ret);
 
-      const data     = await ff.readFile('output.mp4');
-      // readFile returns Uint8Array — use it directly (not .buffer which may be shared/offset)
-      const blob     = new Blob([data instanceof Uint8Array ? data : new Uint8Array(data)], { type: 'video/mp4' });
+      const data = await ff.readFile('output.mp4');
+      if (!data || data.length === 0) throw new Error('Output file is empty — encode failed');
+      const blob = new Blob([data], { type: 'video/mp4' });
       const url      = URL.createObjectURL(blob);
       const a        = document.createElement('a');
       const baseName = sourceFile.name.replace(/\.[^.]+$/, '');
