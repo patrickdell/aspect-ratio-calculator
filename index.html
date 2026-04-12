@@ -239,13 +239,14 @@
                stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <path d="M15 10l-4 4-4-4"/><path d="M11 14V3"/><rect x="2" y="14" width="20" height="8" rx="2"/>
           </svg>
-          <div class="cmp-drop-text">Drop a video here, or click to browse</div>
-          <div class="dropzone-hint">Supports MP4, MOV, MKV, WebM, AVI &mdash; all processing happens locally</div>
-          <input id="cmp-file-input" type="file" accept="video/*" hidden />
+          <div class="cmp-drop-text">Drop videos here, or click to browse</div>
+          <div class="dropzone-hint">Supports MP4, MOV, MKV, WebM, AVI &mdash; multiple files supported</div>
+          <input id="cmp-file-input" type="file" accept="video/*" multiple hidden />
+          <input id="cmp-folder-input" type="file" accept="video/*" webkitdirectory hidden />
         </div>
 
-        <!-- Source info -->
-        <div id="cmp-info" class="card info-box cmp-info" style="display:none"></div>
+        <!-- Queue -->
+        <div id="cmp-queue" class="cmp-queue" style="display:none"></div>
 
         <!-- Settings -->
         <div class="card sidebar-section">
@@ -277,11 +278,11 @@
           </div>
         </div>
 
-        <!-- Quality -->
+        <!-- Speed -->
         <div class="card sidebar-section">
-          <p class="chips-label">Quality</p>
-          <div id="cmp-quality-chips" class="chip-row"></div>
-          <p class="cmp-quality-note">Higher quality takes longer to encode.</p>
+          <p class="chips-label">Speed vs quality</p>
+          <div id="cmp-speed-chips" class="chip-row"></div>
+          <p class="cmp-quality-note">In-browser encoding is slower than desktop apps like Handbrake.</p>
         </div>
 
         <!-- Audio note -->
@@ -290,12 +291,14 @@
           Audio is copied without re-encoding (lossless, fast)
         </div>
 
-        <!-- Compress button -->
-        <div class="sidebar-section">
-          <button id="cmp-compress-btn" class="export-btn" disabled>Compress &amp; Download</button>
+        <!-- Output folder + compress -->
+        <div class="sidebar-section cmp-action-row">
+          <button id="cmp-pick-folder" class="export-btn-secondary">Choose output folder&hellip;</button>
+          <button id="cmp-compress-btn" class="export-btn" disabled>Compress All</button>
         </div>
+        <div id="cmp-folder-label" class="cmp-folder-label" style="display:none"></div>
 
-        <!-- Progress -->
+        <!-- Progress (current file) -->
         <div id="cmp-progress-wrap" class="cmp-progress-wrap" style="display:none">
           <div class="cmp-progress-track">
             <div id="cmp-progress-bar" class="cmp-progress-bar" style="width:0%"></div>

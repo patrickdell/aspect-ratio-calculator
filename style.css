@@ -647,6 +647,88 @@ input[type="color"] {
 
 .cmp-elapsed { color: var(--muted); }
 
+/* Queue */
+.cmp-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cmp-queue-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card2);
+  font-size: 13px;
+}
+
+.cmp-queue-item--encoding { border-color: var(--accent); }
+.cmp-queue-item--done     { opacity: .6; }
+.cmp-queue-item--error    { border-color: var(--error); }
+
+.cmp-q-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.cmp-q-size  { color: var(--muted); white-space: nowrap; }
+.cmp-q-status { color: var(--muted); white-space: nowrap; min-width: 80px; text-align: right; }
+
+.cmp-queue-item--encoding .cmp-q-status { color: var(--accent); }
+.cmp-queue-item--done .cmp-q-status     { color: var(--success); }
+.cmp-queue-item--error .cmp-q-status    { color: var(--error); }
+
+.cmp-q-remove {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+  transition: color .15s;
+}
+.cmp-q-remove:hover { color: var(--error); }
+
+/* Action row */
+.cmp-action-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cmp-action-row .text-btn { white-space: nowrap; }
+
+.cmp-action-row .text-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.cmp-action-row .text-btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.cmp-action-row .text-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.cmp-folder-label {
+  font-size: 12px;
+  color: var(--success);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+.cmp-speed-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 680px) {
   .app-header { padding: 0 14px; gap: 12px; }
