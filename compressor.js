@@ -14,7 +14,9 @@ const LIB = new URL('./lib/ffmpeg/', import.meta.url).href;
 
 const BITRATE_PRESETS    = [1500, 2000, 2250, 2500, 3000, 5000];
 const SIZE_PRESETS       = [3, 5, 10, 15, 20, 30]; // MB
-const QUALITY_MAP        = { low: 'fast', medium: 'medium', high: 'slow' };
+// x264 presets in WASM are much slower than native — use faster presets.
+// veryfast ≈ Handbrake "fast", fast ≈ Handbrake "medium", medium ≈ Handbrake "slow".
+const QUALITY_MAP        = { low: 'veryfast', medium: 'fast', high: 'medium' };
 const ASSUMED_AUDIO_KBPS = 128;
 
 export function initCompressor() {
@@ -215,8 +217,13 @@ export function initCompressor() {
       const ff = new FFmpeg();
 
       ff.on('progress', ({ progress }) => {
-        const pct = Math.round(Math.min(Math.max(progress, 0), 1) * 100);
-        setProgress(10 + Math.round(pct * 0.88), 'Encoding… ' + pct + '%');
+        const pct = Math.min(Math.max(progress, 0), 1);
+        const pctInt = Math.round(pct * 100);
+        const elapsed = (Date.now() - startTime) / 1000;
+        const etaStr = pct > 0.02 && elapsed > 2
+          ? ' — ' + formatDuration(Math.round(elapsed / pct * (1 - pct))) + ' remaining'
+          : '';
+        setProgress(10 + Math.round(pct * 88), 'Encoding… ' + pctInt + '%' + etaStr);
       });
 
       // worker.js is same-origin so FFmpeg's default Worker spawn works fine.
