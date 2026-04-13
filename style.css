@@ -738,6 +738,8 @@ input[type="color"] {
 /* ── New panel visibility ────────────────────── */
 #panel-trim    { display: none; }
 #panel-trim.visible    { display: block; }
+#panel-extract { display: none; }
+#panel-extract.visible { display: block; }
 #panel-resize  { display: none; }
 #panel-resize.visible  { display: block; }
 #panel-palette { display: none; }
@@ -775,6 +777,52 @@ input[type="color"] {
   border-radius: var(--radius);
   display: block;
 }
+
+.trm-audio {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Transport controls */
+.trm-transport {
+  margin: 10px 0 4px;
+}
+
+.trm-step-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.trm-step-btn {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 5px 10px;
+  transition: border-color .15s, color .15s;
+  min-height: 36px;
+}
+.trm-step-btn:hover { border-color: var(--accent); color: var(--ink); }
+
+.trm-play-btn {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 16px;
+  transition: background .15s;
+  min-height: 36px;
+  flex: 1;
+  max-width: 180px;
+}
+.trm-play-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
 .trm-warn {
   font-size: 13px;
@@ -823,22 +871,24 @@ input[type="color"] {
 
 .trm-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
+  width: 8px;
   height: 32px;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: 2px;
   cursor: ew-resize;
   pointer-events: all;
+  box-shadow: 0 0 0 2px rgba(214,48,49,.3);
 }
 
 .trm-range::-moz-range-thumb {
-  width: 18px;
+  width: 8px;
   height: 32px;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: 2px;
   cursor: ew-resize;
   pointer-events: all;
   border: none;
+  box-shadow: 0 0 0 2px rgba(214,48,49,.3);
 }
 
 .trm-range::-webkit-slider-runnable-track { background: transparent; }

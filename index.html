@@ -39,6 +39,7 @@
       <button class="tab-btn" data-tab="crop">Crop &amp; Export</button>
       <button class="tab-btn" data-tab="compress">Compressor</button>
       <button class="tab-btn" data-tab="trim">Trimmer</button>
+      <button class="tab-btn" data-tab="extract">Extract Audio</button>
       <button class="tab-btn" data-tab="resize">Image Resize</button>
       <button class="tab-btn" data-tab="palette">Palette</button>
     </nav>
@@ -342,9 +343,9 @@
                stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <path d="M15 10l-4 4-4-4"/><path d="M11 14V3"/><rect x="2" y="14" width="20" height="8" rx="2"/>
           </svg>
-          <div class="trm-drop-text">Drop a video here, or click to browse</div>
-          <div class="dropzone-hint">H.264, H.265, VP8/VP9 in MP4, MOV, MKV, WebM &mdash; stream copy, near-instant</div>
-          <input id="trm-file-input" type="file" accept="video/*" hidden />
+          <div class="trm-drop-text">Drop a video or audio file here, or click to browse</div>
+          <div class="dropzone-hint">Video: MP4, MOV, MKV, WebM &mdash; Audio: MP3, AAC, WAV, M4A, OGG &mdash; stream copy, near-instant</div>
+          <input id="trm-file-input" type="file" accept="video/*,audio/*" hidden />
         </div>
 
         <!-- Format warning -->
@@ -357,7 +358,21 @@
 
         <!-- Player + timeline -->
         <div id="trm-player-wrap" style="display:none">
-          <video id="trm-video" class="trm-video" controls preload="metadata"></video>
+          <!-- Video element (hidden for audio-only files) -->
+          <video id="trm-video" class="trm-video" preload="metadata"></video>
+          <!-- Audio element (shown for audio-only files) -->
+          <audio id="trm-audio" class="trm-audio" controls preload="metadata" style="display:none;width:100%"></audio>
+
+          <!-- Transport controls -->
+          <div class="trm-transport">
+            <div class="trm-step-group">
+              <button id="trm-step-back-frame"  class="trm-step-btn" title="Back 1 frame">&#x23EE; 1f</button>
+              <button id="trm-step-back-sec"    class="trm-step-btn" title="Back 1 second">&#x23EE; 1s</button>
+              <button id="trm-play-clip"        class="trm-play-btn" title="Preview clip between In and Out">&#9654; Preview clip</button>
+              <button id="trm-step-fwd-sec"     class="trm-step-btn" title="Forward 1 second">1s &#x23ED;</button>
+              <button id="trm-step-fwd-frame"   class="trm-step-btn" title="Forward 1 frame">1f &#x23ED;</button>
+            </div>
+          </div>
 
           <!-- Timeline -->
           <div class="trm-timeline">
@@ -397,6 +412,55 @@
 
       </div>
       <div class="tab-permalink"><a class="tab-permalink-link" href="#trim" data-permalink="trim">🔗 Link to this tool</a></div>
+    </div>
+  </section>
+
+  <!-- ── Audio Extractor panel ────────────────────────────────────── -->
+  <section id="panel-extract">
+    <div class="wrap">
+      <div class="cmp-layout">
+
+        <!-- Drop zone -->
+        <div id="ext-dropzone" class="dropzone card cmp-dropzone">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+          </svg>
+          <div class="ext-drop-text">Drop a video here, or click to browse</div>
+          <div class="dropzone-hint">MP4, MOV, MKV, WebM, AVI &mdash; audio track extracted in-browser</div>
+          <input id="ext-file-input" type="file" accept="video/*" multiple hidden />
+        </div>
+
+        <!-- Queue -->
+        <div id="ext-queue" class="cmp-queue" style="display:none"></div>
+
+        <!-- Format -->
+        <div class="card sidebar-section">
+          <p class="chips-label">Output format</p>
+          <div id="ext-format-chips" class="chip-row"></div>
+          <p class="cmp-quality-note" id="ext-format-note">MP3 at 192 kbps — compatible everywhere.</p>
+        </div>
+
+        <!-- Action -->
+        <div class="cmp-action-row">
+          <button id="ext-pick-folder" class="export-btn-secondary">Choose output folder&hellip;</button>
+          <button id="ext-extract-btn" class="export-btn" disabled>Extract Audio</button>
+        </div>
+        <div id="ext-folder-label" class="cmp-folder-label" style="display:none"></div>
+
+        <!-- Progress -->
+        <div id="ext-progress-wrap" class="cmp-progress-wrap" style="display:none">
+          <div class="cmp-progress-track">
+            <div id="ext-progress-bar" class="cmp-progress-bar" style="width:0%"></div>
+          </div>
+          <div class="cmp-progress-meta">
+            <span id="ext-progress-label">Preparing…</span>
+          </div>
+          <button id="ext-cancel-btn" class="text-btn">Cancel</button>
+        </div>
+
+      </div>
+      <div class="tab-permalink"><a class="tab-permalink-link" href="#extract" data-permalink="extract">🔗 Link to this tool</a></div>
     </div>
   </section>
 

@@ -8,6 +8,7 @@ import { initExporter }            from './exporter.js';
 import { initEmbed }               from './embed.js';
 import { initCompressor }          from './compressor.js';
 import { initTrimmer }             from './trimmer.js';
+import { initExtractor }           from './extractor.js';
 import { initResizer }             from './resizer.js';
 import { initPalette }             from './palette.js';
 
@@ -42,6 +43,7 @@ const panels  = {
   crop:     'panel-crop',
   compress: 'panel-compress',
   trim:     'panel-trim',
+  extract:  'panel-extract',
   resize:   'panel-resize',
   palette:  'panel-palette',
 };
@@ -79,6 +81,7 @@ const cropChips = document.getElementById('cropChips');
 initEmbed();
 initCompressor();
 initTrimmer();
+initExtractor();
 initResizer();
 initPalette();
 const calculator = initCalculator({ onRatioChange: () => {} });
