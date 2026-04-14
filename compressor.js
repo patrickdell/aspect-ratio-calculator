@@ -38,6 +38,7 @@ export function initCompressor() {
   const customScaleWrap    = document.getElementById('cmp-custom-scale-wrap');
   const customScaleInput   = document.getElementById('cmp-custom-scale');
   const compressBtn        = document.getElementById('cmp-compress-btn');
+  const clearQueueBtn      = document.getElementById('cmp-clear-queue');
   const pickFolderBtn      = document.getElementById('cmp-pick-folder');
   const folderLabel        = document.getElementById('cmp-folder-label');
   const progressWrap       = document.getElementById('cmp-progress-wrap');
@@ -218,7 +219,8 @@ export function initCompressor() {
       vid.addEventListener('error', () => URL.revokeObjectURL(url));
     });
     renderQueue();
-    compressBtn.disabled = false;
+    compressBtn.disabled  = false;
+    clearQueueBtn.disabled = false;
     dropzone.classList.add('has-file');
     dropzone.querySelector('.cmp-drop-text').textContent =
       queue.length === 1 ? esc(queue[0].file.name) : queue.length + ' videos queued';
@@ -243,7 +245,8 @@ export function initCompressor() {
         const i = Number(btn.dataset.i);
         queue.splice(i, 1);
         if (queue.length === 0) {
-          compressBtn.disabled = true;
+          compressBtn.disabled   = true;
+          clearQueueBtn.disabled = true;
           dropzone.classList.remove('has-file');
           dropzone.querySelector('.cmp-drop-text').textContent = 'Drop videos here, or click to browse';
         } else {
@@ -254,6 +257,16 @@ export function initCompressor() {
       });
     });
   }
+
+  // ── Clear queue ───────────────────────────────────────────────────────────
+  clearQueueBtn.addEventListener('click', () => {
+    queue = [];
+    renderQueue();
+    compressBtn.disabled   = true;
+    clearQueueBtn.disabled = true;
+    dropzone.classList.remove('has-file');
+    dropzone.querySelector('.cmp-drop-text').textContent = 'Drop videos here, or click to browse';
+  });
 
   function updateEstSize() {
     const mode = document.querySelector('input[name="cmp-mode"]:checked')?.value;
@@ -344,8 +357,9 @@ export function initCompressor() {
           await saveFile(blob, baseName);
 
           item.status = 'done';
-          const outMB = (blob.size / 1048576).toFixed(1);
-          item.statusText = '✓ Done — ' + outMB + ' MB';
+          const outMB   = (blob.size / 1048576).toFixed(1);
+          const savings = Math.round((1 - blob.size / item.file.size) * 100);
+          item.statusText = `✓ → ${outMB} MB  −${savings}%`;
           renderQueue();
 
         } catch (err) {
@@ -373,7 +387,8 @@ export function initCompressor() {
       setTimeout(() => { progressWrap.style.display = 'none'; }, 3000);
     } finally {
       encoding = false;
-      compressBtn.disabled = queue.every(q => q.status === 'done');
+      compressBtn.disabled   = queue.every(q => q.status === 'done');
+      clearQueueBtn.disabled = queue.length === 0;
     }
   }
 

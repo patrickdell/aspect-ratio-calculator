@@ -23,6 +23,7 @@ export function initExtractor() {
   const progressWrap = document.getElementById('ext-progress-wrap');
   const progressBar  = document.getElementById('ext-progress-bar');
   const progressLabel = document.getElementById('ext-progress-label');
+  const clearQueueBtn = document.getElementById('ext-clear-queue');
   const cancelBtn   = document.getElementById('ext-cancel-btn');
 
   let queue           = [];
@@ -61,7 +62,8 @@ export function initExtractor() {
   function addFiles(files) {
     files.forEach(f => queue.push({ file: f, status: 'waiting', statusText: 'Waiting' }));
     renderQueue();
-    extractBtn.disabled = false;
+    extractBtn.disabled   = false;
+    clearQueueBtn.disabled = false;
     dropzone.querySelector('.ext-drop-text').textContent =
       queue.length === 1 ? queue[0].file.name : queue.length + ' videos queued';
     dropzone.classList.add('has-file');
@@ -85,7 +87,8 @@ export function initExtractor() {
       btn.addEventListener('click', () => {
         queue.splice(Number(btn.dataset.i), 1);
         if (!queue.length) {
-          extractBtn.disabled = true;
+          extractBtn.disabled    = true;
+          clearQueueBtn.disabled = true;
           dropzone.classList.remove('has-file');
           dropzone.querySelector('.ext-drop-text').textContent = 'Drop a video here, or click to browse';
         }
@@ -93,6 +96,16 @@ export function initExtractor() {
       });
     });
   }
+
+  // ── Clear queue ───────────────────────────────────────────────────────────
+  clearQueueBtn.addEventListener('click', () => {
+    queue = [];
+    renderQueue();
+    extractBtn.disabled    = true;
+    clearQueueBtn.disabled = true;
+    dropzone.classList.remove('has-file');
+    dropzone.querySelector('.ext-drop-text').textContent = 'Drop a video here, or click to browse';
+  });
 
   // ── Output folder ─────────────────────────────────────────────────────────
   pickFolderBtn.addEventListener('click', async () => {
@@ -179,7 +192,8 @@ export function initExtractor() {
       setTimeout(() => { progressWrap.style.display = 'none'; }, 4000);
     } finally {
       running = false;
-      extractBtn.disabled = queue.every(q => q.status === 'done');
+      extractBtn.disabled    = queue.every(q => q.status === 'done');
+      clearQueueBtn.disabled = queue.length === 0;
     }
   }
 
