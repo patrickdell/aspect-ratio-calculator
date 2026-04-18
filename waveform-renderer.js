@@ -25,6 +25,14 @@ const BAR_WIDTHS = [
   { label: 'EQ',     px: 8, gap: 2 },
 ];
 
+// Decay multiplier applied per frame (1.0 = no decay / instant drop)
+const DECAY_MODES = [
+  { label: 'Off',    rate: 1.00  },   // bars track audio directly
+  { label: 'Fast',   rate: 0.82  },   // quick fall, still responsive
+  { label: 'Smooth', rate: 0.92  },   // medium — classic VU feel
+  { label: 'Hold',   rate: 0.975 },   // very slow fall, dramatic
+];
+
 const BG_MODES = [
   { label: 'Colour',      id: 'color'       },
   { label: 'Transparent', id: 'transparent' },
@@ -44,6 +52,7 @@ export function initWaveformRenderer() {
   const bgColorPicker  = document.getElementById('wfr-bg-color');
   const styleChipsEl    = document.getElementById('wfr-style-chips');
   const barWidthChipsEl = document.getElementById('wfr-barwidth-chips');
+  const decayChipsEl    = document.getElementById('wfr-decay-chips');
   const waveColorPicker= document.getElementById('wfr-wave-color');
   const waveOpacity    = document.getElementById('wfr-wave-opacity');
   const opacityVal     = document.getElementById('wfr-opacity-val');
@@ -68,6 +77,8 @@ export function initWaveformRenderer() {
   let selectedSize   = SIZE_PRESETS[0];  // default 9:16
   let selectedStyle  = 'bars';
   let selectedBar    = BAR_WIDTHS[0];    // { px, gap }
+  let selectedDecay  = DECAY_MODES[0];  // { rate }
+  let decayBuffer    = null;            // Float32Array, one entry per bar
   let bgMode         = 'color';          // 'color' | 'transparent'
   let analyser       = null;
   let audioCtxLive   = null;
@@ -100,7 +111,9 @@ export function initWaveformRenderer() {
     btn.addEventListener('click', () => {
       setChip(bgChipsEl, btn);
       bgMode = mode.id;
-      bgColorRow.style.display = bgMode === 'color' ? '' : 'none';
+      const showColor = bgMode === 'color';
+      bgColorRow.style.display = showColor ? '' : 'none';
+      document.getElementById('wfr-bg-swatches').style.display = showColor ? '' : 'none';
       redrawStatic();
     });
     bgChipsEl.appendChild(btn);
@@ -132,6 +145,20 @@ export function initWaveformRenderer() {
       redrawStatic();
     });
     barWidthChipsEl.appendChild(btn);
+  });
+
+  // ── Build decay chips ───────────────────────────────────────────────────────
+  DECAY_MODES.forEach((mode, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip' + (i === 0 ? ' active' : '');
+    btn.textContent = mode.label;
+    btn.addEventListener('click', () => {
+      setChip(decayChipsEl, btn);
+      selectedDecay = mode;
+      decayBuffer   = null; // reset on mode change
+    });
+    decayChipsEl.appendChild(btn);
   });
 
   // ── Colour swatches (reuse e-swatch pattern) ────────────────────────────────
@@ -352,17 +379,31 @@ export function initWaveformRenderer() {
       return;
     }
 
-    const bw      = selectedBar.px;
-    const gap     = selectedBar.gap;
-    const step    = bw + gap;
+    const bw       = selectedBar.px;
+    const gap      = selectedBar.gap;
+    const step     = bw + gap;
     const barCount = Math.floor(W / step);
     const buckW    = data.length / barCount;
+    const rate     = selectedDecay.rate;
+
+    // Initialise or resize decay buffer when bar count changes
+    if (!decayBuffer || decayBuffer.length !== barCount) {
+      decayBuffer = new Float32Array(barCount);
+    }
 
     for (let b = 0; b < barCount; b++) {
       let sum = 0, cnt = 0;
       const s = Math.floor(b * buckW), e = Math.min(data.length, Math.floor((b + 1) * buckW));
       for (let i = s; i < e; i++) { sum += Math.abs((data[i] / 128.0) - 1.0); cnt++; }
-      const amp = (cnt ? sum / cnt : 0) * maxAmp;
+      const raw = (cnt ? sum / cnt : 0) * maxAmp;
+
+      // Rise instantly, decay at selected rate
+      if (raw >= decayBuffer[b]) {
+        decayBuffer[b] = raw;
+      } else {
+        decayBuffer[b] = Math.max(0, decayBuffer[b] * rate);
+      }
+      const amp = decayBuffer[b];
       const x   = b * step;
 
       if (selectedStyle === 'bars') {
@@ -420,7 +461,8 @@ export function initWaveformRenderer() {
     if (audioEl)   { audioEl.pause(); audioEl.onended = null; }
     if (bgVideoEl) bgVideoEl.pause();
     if (audioCtxLive) { audioCtxLive.close(); audioCtxLive = null; }
-    analyser = null;
+    analyser    = null;
+    decayBuffer = null;
     playBtn.textContent = '▶ Preview';
     redrawStatic();
   }

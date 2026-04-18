@@ -668,6 +668,23 @@
               <label for="wfr-bg-color">BG colour</label>
               <input type="color" id="wfr-bg-color" value="#111111">
             </div>
+            <div class="e-swatches" data-target="wfr-bg-color" style="margin-top:8px" id="wfr-bg-swatches">
+              <span class="e-swatch-label">Presets:</span>
+              <span class="e-swatch" style="background:#000000"                                title="Black"       data-color="#000000"></span>
+              <span class="e-swatch" style="background:#111111"                                title="Near black"  data-color="#111111"></span>
+              <span class="e-swatch" style="background:#ffffff;border-color:rgba(0,0,0,0.25)" title="White"       data-color="#ffffff"></span>
+              <span class="e-swatch" style="background:#D50202"                                title="Red"         data-color="#D50202"></span>
+              <span class="e-swatch" style="background:#AC0000"                                                    data-color="#AC0000"></span>
+              <span class="e-swatch" style="background:#FAE1E1"                                                    data-color="#FAE1E1"></span>
+              <span class="e-swatch" style="background:#268626"                                title="Green"       data-color="#268626"></span>
+              <span class="e-swatch" style="background:#0B560D"                                                    data-color="#0B560D"></span>
+              <span class="e-swatch" style="background:#E5F0E5"                                                    data-color="#E5F0E5"></span>
+              <span class="e-swatch" style="background:#096080"                                title="Blue"        data-color="#096080"></span>
+              <span class="e-swatch" style="background:#E5EFF1"                                                    data-color="#E5EFF1"></span>
+              <span class="e-swatch" style="background:#F8EC88"                                title="Yellow"      data-color="#F8EC88"></span>
+              <span class="e-swatch" style="background:#ff6b35"                                title="Orange"      data-color="#ff6b35"></span>
+              <span class="e-swatch" style="background:#c77dff"                                title="Purple"      data-color="#c77dff"></span>
+            </div>
           </div>
 
           <div class="sidebar-section">
@@ -712,6 +729,12 @@
           <div class="sidebar-section">
             <div class="chips-label">Bar width</div>
             <div class="chip-row" id="wfr-barwidth-chips"></div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="chips-label">Bar decay</div>
+            <div class="chip-row" id="wfr-decay-chips"></div>
+            <p class="wfr-png-note" style="margin-top:6px">Bars rise instantly but fall at the selected rate — like a VU meter.</p>
           </div>
 
           <div class="sidebar-section" style="display:flex;flex-direction:column;gap:8px">
