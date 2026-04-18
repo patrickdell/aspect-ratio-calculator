@@ -43,6 +43,7 @@
       <button class="tab-btn" data-tab="resize">Image Resize</button>
       <button class="tab-btn" data-tab="palette">Palette</button>
       <button class="tab-btn" data-tab="label">Labeller</button>
+      <button class="tab-btn" data-tab="waveform">Waveform</button>
     </nav>
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Open tools menu">
       <svg width="18" height="18" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -375,6 +376,7 @@
 
           <!-- Timeline with playhead needle -->
           <div class="trm-timeline">
+            <canvas id="trm-waveform" class="trm-waveform" style="display:none"></canvas>
             <div class="trm-track-bg" id="trm-track-bg">
               <div id="trm-track-fill" class="trm-track-fill"></div>
               <div id="trm-playhead" class="trm-playhead"></div>
@@ -631,6 +633,88 @@
 
       </div>
       <div class="tab-permalink"><a class="tab-permalink-link" href="#label" data-permalink="label">🔗 Link to this tool</a></div>
+    </div>
+  </section>
+
+  <!-- ── Waveform Renderer panel ──────────────────────────────────── -->
+  <section id="panel-waveform">
+    <div class="wrap">
+      <div class="wfr-layout">
+
+        <!-- Left: controls -->
+        <div class="wfr-sidebar">
+
+          <div class="sidebar-section">
+            <div class="chips-label">Output size</div>
+            <div class="chip-row" id="wfr-size-chips"></div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="chips-label">Audio source</div>
+            <div id="wfr-audio-drop" class="wfr-mini-drop">
+              <span id="wfr-audio-drop-text">Drop audio or video file</span>
+              <input id="wfr-audio-input" type="file" accept="audio/*,video/*" hidden>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="chips-label">Background <span class="wfr-optional">(optional)</span></div>
+            <div id="wfr-bg-drop" class="wfr-mini-drop">
+              <span id="wfr-bg-drop-text">Drop photo or video</span>
+              <input id="wfr-bg-input" type="file" accept="image/*,video/*" hidden>
+            </div>
+            <div class="chip-row" id="wfr-bg-chips" style="margin-top:8px"></div>
+            <div class="wfr-color-row" style="margin-top:8px" id="wfr-bg-color-row">
+              <label for="wfr-bg-color">BG colour</label>
+              <input type="color" id="wfr-bg-color" value="#111111">
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="chips-label">Style</div>
+            <div class="chip-row" id="wfr-style-chips"></div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="wfr-color-row">
+              <label for="wfr-wave-color">Wave colour</label>
+              <input type="color" id="wfr-wave-color" value="#ffffff">
+            </div>
+            <div class="wfr-color-row" style="margin-top:8px">
+              <label for="wfr-wave-opacity" style="min-width:56px">Opacity</label>
+              <input type="range" id="wfr-wave-opacity" min="10" max="100" value="90" style="flex:1">
+              <span id="wfr-opacity-val" style="min-width:30px;text-align:right;font-size:.8rem">90%</span>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="chips-label">Waveform height</div>
+            <input type="range" id="wfr-wave-height" min="10" max="90" value="40" style="width:100%;accent-color:var(--accent)">
+          </div>
+
+          <div class="sidebar-section" style="display:flex;flex-direction:column;gap:8px">
+            <button id="wfr-play-btn"   class="export-btn-secondary" disabled>▶ Preview</button>
+            <button id="wfr-export-btn" class="export-btn"           disabled>Export video</button>
+            <div id="wfr-progress-wrap" class="cmp-progress-wrap" style="display:none">
+              <div class="cmp-progress-track">
+                <div id="wfr-progress-bar" class="cmp-progress-bar" style="width:0%"></div>
+              </div>
+              <div class="cmp-progress-meta">
+                <span id="wfr-progress-label">Recording…</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: preview canvas -->
+        <div class="wfr-preview-wrap">
+          <canvas id="wfr-canvas" class="wfr-canvas" width="270" height="480"></canvas>
+          <p class="wfr-canvas-hint" id="wfr-canvas-hint">Drop an audio file to begin</p>
+        </div>
+
+      </div>
+      <div class="tab-permalink"><a class="tab-permalink-link" href="#waveform" data-permalink="waveform">🔗 Link to this tool</a></div>
     </div>
   </section>
 

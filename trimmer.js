@@ -54,6 +54,10 @@ export function initTrimmer() {
   const progressBar   = document.getElementById('trm-progress-bar');
   const progressLabel = document.getElementById('trm-progress-label');
   const saveHint      = document.getElementById('trm-save-hint');
+  const waveformCanvas = document.getElementById('trm-waveform');
+  const waveCtx        = waveformCanvas.getContext('2d');
+
+  let waveformPeaks = null;
 
   // ── Platform-aware save hint ──────────────────────────────────────────────
   const ua = navigator.userAgent;
@@ -159,6 +163,54 @@ export function initTrimmer() {
 
     // Warm up FFmpeg in background
     getFFmpeg().catch(() => {});
+
+    // Build waveform async (silent fail for unsupported formats)
+    buildWaveform(file);
+  }
+
+  async function buildWaveform(file) {
+    waveformPeaks = null;
+    waveformCanvas.style.display = 'none';
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const decoded  = await audioCtx.decodeAudioData(arrayBuffer);
+      await audioCtx.close();
+
+      const raw     = decoded.getChannelData(0);
+      const W       = waveformCanvas.parentElement.clientWidth || 600;
+      const step    = Math.max(1, Math.floor(raw.length / W));
+      const peaks   = new Float32Array(W);
+      for (let i = 0; i < W; i++) {
+        let sum = 0;
+        for (let j = 0; j < step; j++) sum += raw[i * step + j] ** 2;
+        peaks[i] = Math.sqrt(sum / step);
+      }
+      // Normalise
+      let max = 0.001;
+      for (let i = 0; i < peaks.length; i++) if (peaks[i] > max) max = peaks[i];
+      for (let i = 0; i < peaks.length; i++) peaks[i] /= max;
+
+      waveformPeaks = peaks;
+      waveformCanvas.width  = W;
+      waveformCanvas.height = 56;
+      waveformCanvas.style.display = '';
+      drawWaveform();
+    } catch (_) { /* silent — some formats may not decode */ }
+  }
+
+  function drawWaveform() {
+    if (!waveformPeaks) return;
+    const W = waveformCanvas.width, H = waveformCanvas.height;
+    waveCtx.clearRect(0, 0, W, H);
+    const x1 = duration ? Math.round((inPoint  / duration) * W) : 0;
+    const x2 = duration ? Math.round((outPoint / duration) * W) : W;
+    for (let i = 0; i < W; i++) {
+      const amp      = waveformPeaks[i] * (H / 2) * 0.88;
+      const inRange  = i >= x1 && i <= x2;
+      waveCtx.fillStyle = inRange ? 'rgba(214,48,49,0.80)' : 'rgba(160,128,128,0.22)';
+      waveCtx.fillRect(i, H / 2 - amp, 1, amp * 2 || 1);
+    }
   }
 
   // ── Click-to-seek on the track bar ────────────────────────────────────────
@@ -288,6 +340,7 @@ export function initTrimmer() {
     inLabel.textContent   = 'In: '   + fmt(inPoint);
     outLabel.textContent  = 'Out: '  + fmt(outPoint);
     clipLabel.textContent = 'Clip: ' + fmt(outPoint - inPoint);
+    drawWaveform();
 
     const pctIn  = duration ? (inPoint  / duration) * 100 : 0;
     const pctOut = duration ? (outPoint / duration) * 100 : 100;

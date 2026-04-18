@@ -12,6 +12,7 @@ import { initExtractor }           from './extractor.js';
 import { initResizer }             from './resizer.js';
 import { initPalette }             from './palette.js';
 import { initLabeller }           from './labeller.js';
+import { initWaveformRenderer }   from './waveform-renderer.js';
 
 // ── Build preset chips ────────────────────────────────────────────────────
 
@@ -48,6 +49,7 @@ const panels  = {
   resize:   'panel-resize',
   palette:  'panel-palette',
   label:    'panel-label',
+  waveform: 'panel-waveform',
 };
 
 let drawer; // set up below before first activateTab call
@@ -89,6 +91,7 @@ const cropChips = document.getElementById('cropChips');
 
 initEmbed();
 initLabeller();
+initWaveformRenderer();
 initCompressor();
 initTrimmer();
 initExtractor();

@@ -1189,3 +1189,56 @@ input, select, textarea { font-size: 16px; }
   .tabs { display: none; }
   .nav-hamburger { display: flex; align-items: center; }
 }
+
+/* ── Trimmer waveform canvas ───────────────────────────────────────────────── */
+.trm-waveform {
+  display: block; width: 100%; height: 56px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--card2); margin-bottom: -1px;
+}
+
+/* ── Waveform Renderer ─────────────────────────────────────────────────────── */
+.wfr-layout {
+  display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;
+}
+.wfr-sidebar {
+  flex: 0 0 220px; display: flex; flex-direction: column; gap: 0;
+}
+.wfr-preview-wrap {
+  flex: 1; min-width: 260px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.wfr-canvas {
+  max-width: 100%; border-radius: var(--radius);
+  background: #111; display: block;
+  box-shadow: 0 4px 24px rgba(0,0,0,.5);
+}
+.wfr-canvas-hint { font-size: .82rem; color: var(--muted); text-align: center; margin: 0; }
+
+.wfr-mini-drop {
+  border: 1px dashed var(--line); border-radius: var(--radius-sm);
+  padding: 10px 12px; cursor: pointer; font-size: .82rem; color: var(--muted);
+  text-align: center; transition: border-color .15s; user-select: none;
+}
+.wfr-mini-drop:hover, .wfr-mini-drop.drag-over { border-color: var(--accent); color: var(--ink); }
+.wfr-mini-drop.has-file { border-color: var(--accent); color: var(--accent); }
+
+.wfr-optional { font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+.wfr-color-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .82rem; color: var(--muted);
+}
+.wfr-color-row label { min-width: 72px; }
+.wfr-color-row input[type="color"] {
+  width: 32px; height: 26px; border: 1px solid var(--line); border-radius: 4px;
+  cursor: pointer; padding: 2px; background: none; flex-shrink: 0;
+}
+.wfr-color-row input[type="range"] { accent-color: var(--accent); flex: 1; }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+
+@media (max-width: 640px) {
+  .wfr-layout { flex-direction: column; }
+  .wfr-sidebar { flex: none; width: 100%; }
+}
