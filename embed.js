@@ -339,7 +339,7 @@ export function initEmbed() {
     const swatchTarget  = `eb-${svc.id}`;
     const swatchesHtml  = showSwatches ? `
   <div class="e-swatches" data-target="${swatchTarget}">
-    <span class="e-swatch-label">Presets:</span>
+    <span class="e-swatch-label" title="Colour presets">🎨</span>
     <span class="e-swatch" style="background:#000000" title="Black" data-color="#000000"></span>
     <span class="e-swatch" style="background:#ffffff;border-color:rgba(0,0,0,0.25)" title="White" data-color="#ffffff"></span>
     <span class="e-swatch" style="background:#D50202" title="Red" data-color="#D50202"></span>
@@ -417,7 +417,10 @@ export function initEmbed() {
     }
     const swatch = e.target.closest('.e-swatch');
     if (swatch) {
-      const picker = document.getElementById(swatch.closest('.e-swatches').dataset.target);
+      const swatchGroup = swatch.closest('.e-swatches');
+      swatchGroup.querySelectorAll('.e-swatch').forEach(s => s.classList.remove('e-swatch--active'));
+      swatch.classList.add('e-swatch--active');
+      const picker = document.getElementById(swatchGroup.dataset.target);
       if (picker) picker.value = swatch.dataset.color;
       return;
     }

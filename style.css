@@ -471,17 +471,23 @@ input[type="color"] {
   margin-top: 8px;
   align-items: center;
 }
-.e-swatch-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.e-swatch-label { font-size: 13px; color: var(--muted); white-space: nowrap; opacity: .8; }
 .e-swatch {
-  width: 20px;
-  height: 20px;
-  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
   border: 1px solid rgba(255,255,255,.15);
   cursor: pointer;
-  transition: transform .1s, box-shadow .1s;
+  transition: transform .12s, box-shadow .12s;
   flex-shrink: 0;
+  position: relative;
 }
-.e-swatch:hover { transform: scale(1.2); box-shadow: 0 0 0 2px var(--accent); position: relative; z-index: 1; }
+.e-swatch:hover { transform: scale(1.18); box-shadow: 0 0 0 2px var(--accent); z-index: 1; }
+.e-swatch--active {
+  box-shadow: 0 0 0 2px var(--accent), 0 0 0 4px rgba(214,48,49,.25);
+  transform: scale(1.15);
+  z-index: 1;
+}
 
 .e-float-row {
   display: flex;
@@ -1005,6 +1011,10 @@ input[type="color"] {
 /* ── Labeller ────────────────────────────────── */
 #panel-label { display: none; }
 #panel-label.visible { display: block; }
+
+/* ── Waveform Renderer ───────────────────────── */
+#panel-waveform { display: none; }
+#panel-waveform.visible { display: block; }
 
 .lbl-canvas-wrap {
   border-radius: var(--radius);

@@ -167,7 +167,10 @@ export function initWaveformRenderer() {
   document.getElementById('panel-waveform').addEventListener('click', e => {
     const swatch = e.target.closest('.e-swatch');
     if (!swatch) return;
-    const target = document.getElementById(swatch.closest('.e-swatches').dataset.target);
+    const swatchGroup = swatch.closest('.e-swatches');
+    swatchGroup.querySelectorAll('.e-swatch').forEach(s => s.classList.remove('e-swatch--active'));
+    swatch.classList.add('e-swatch--active');
+    const target = document.getElementById(swatchGroup.dataset.target);
     if (target) { target.value = swatch.dataset.color; target.dispatchEvent(new Event('input')); }
   });
 
