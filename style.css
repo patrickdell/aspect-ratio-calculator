@@ -1418,7 +1418,99 @@ input, select, textarea { font-size: 16px; }
   color: var(--muted);
   margin: 0;
   line-height: 1.5;
-  min-height: 1.5em; /* stops layout shift when text appears */
+  min-height: 1.5em;
+}
+
+/* Transcript header row */
+.tr-transcript-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tr-edit-hint {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* Editable segment text */
+.tr-text[contenteditable="true"] {
+  cursor: text;
+  border-radius: 3px;
+  outline: none;
+  transition: background .12s;
+}
+.tr-text[contenteditable="true"]:hover {
+  background: rgba(128,128,128,.07);
+}
+.tr-text[contenteditable="true"]:focus {
+  background: rgba(128,128,128,.1);
+  box-shadow: 0 0 0 2px var(--accent) inset;
+  padding: 1px 3px;
+}
+
+/* Find & Replace bar */
+.tr-find-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.tr-find-row {
+  display: flex;
+  gap: 8px;
+}
+.tr-find-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  min-width: 0;
+}
+.tr-find-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.tr-find-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tr-match-count {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 72px;
+}
+.tr-find-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.tr-find-close:hover { color: var(--ink); background: rgba(128,128,128,.12); }
+
+/* Match highlights */
+mark.tr-match {
+  background: rgba(255, 213, 79, 0.55);
+  color: inherit;
+  border-radius: 2px;
+}
+mark.tr-match-current {
+  background: rgba(255, 140, 0, 0.65);
+  outline: 1px solid rgba(255,140,0,.8);
 }
 .tr-segments {
   display: flex;
@@ -1445,6 +1537,12 @@ input, select, textarea { font-size: 16px; }
 .tr-text { color: var(--ink); }
 
 /* ── OCR panel ───────────────────────────────────────────────────────── */
+.ocr-lang-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
 .ocr-preview {
   max-width: 100%;
   max-height: 240px;

@@ -811,7 +811,27 @@
       </div>
 
       <div id="tr-output" class="tool-card" style="display:none">
-        <div class="chips-label">Transcript</div>
+        <div class="tr-transcript-header">
+          <span class="chips-label">Transcript <span class="tr-edit-hint">— click any line to edit</span></span>
+          <button class="chip" id="tr-find-replace-btn">Find &amp; Replace</button>
+        </div>
+
+        <!-- Find & Replace bar -->
+        <div id="tr-find-bar" class="tr-find-bar" style="display:none">
+          <div class="tr-find-row">
+            <input id="tr-find-input"    class="tr-find-input" type="text" placeholder="Find…" autocomplete="off" spellcheck="false">
+            <input id="tr-replace-input" class="tr-find-input" type="text" placeholder="Replace with…" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="tr-find-actions">
+            <span id="tr-match-count" class="tr-match-count"></span>
+            <button class="chip" id="tr-find-prev"    title="Previous match (Shift+Enter)">&#8593;</button>
+            <button class="chip" id="tr-find-next"    title="Next match (Enter)">&#8595;</button>
+            <button class="chip" id="tr-replace-one"  title="Replace current match (Enter in replace field)">Replace</button>
+            <button class="chip" id="tr-replace-all">Replace All</button>
+            <button class="tr-find-close" id="tr-find-close" aria-label="Close">&times;</button>
+          </div>
+        </div>
+
         <div id="tr-segments" class="tr-segments"></div>
         <div class="export-bar">
           <button class="chip" id="tr-export-srt">Export SRT</button>
@@ -831,8 +851,9 @@
       <p class="panel-desc">Extract text from images locally — no upload required. Powered by Tesseract.js running in your browser.</p>
 
       <div class="tool-card">
-        <div class="chips-label">Language</div>
+        <div class="chips-label">Language in image</div>
         <div class="chips-row" id="ocr-lang-chips"></div>
+        <p class="ocr-lang-hint">Select the language the text is written in. Tesseract uses this to load the right recognition model — it cannot auto-detect.</p>
 
         <div id="ocr-dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop image file">
           <input type="file" id="ocr-file-input" accept="image/*" style="display:none">
