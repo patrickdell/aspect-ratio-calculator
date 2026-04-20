@@ -214,15 +214,40 @@ export function initTrimmer() {
     }
   }
 
-  // ── Click-to-seek on the track bar ────────────────────────────────────────
+  // ── Click-and-drag scrub on the track bar ────────────────────────────────
+  let scrubbing = false;
+
+  function scrubTo(clientX) {
+    const rect = trackBg.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    media().currentTime = fraction * duration;
+    updatePlayhead();
+    cancelClipPreview();
+  }
+
   trackBg.addEventListener('pointerdown', e => {
     if (!currentFile || !duration) return;
-    // Let range thumb pointer-events handle thumb drags naturally
     if (e.target.classList.contains('trm-range')) return;
-    const rect = trackBg.getBoundingClientRect();
-    const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    media().currentTime = fraction * duration;
-    cancelClipPreview();
+    scrubbing = true;
+    trackBg.setPointerCapture(e.pointerId); // keep receiving events if pointer leaves
+    trackBg.style.cursor = 'ew-resize';
+    scrubTo(e.clientX);
+  });
+
+  trackBg.addEventListener('pointermove', e => {
+    if (!scrubbing) return;
+    scrubTo(e.clientX);
+  });
+
+  trackBg.addEventListener('pointerup', e => {
+    if (!scrubbing) return;
+    scrubbing = false;
+    trackBg.style.cursor = '';
+  });
+
+  trackBg.addEventListener('pointercancel', () => {
+    scrubbing = false;
+    trackBg.style.cursor = '';
   });
 
   // ── Timeline range handle drag (seeks so user can preview the frame) ──────
