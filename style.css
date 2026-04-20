@@ -1564,10 +1564,22 @@ mark.tr-match-current {
   margin-top: 10px;
   border: 1px solid var(--line);
 }
+.thumb-intro {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
 .thumb-drag-hint {
   font-size: 12px;
   color: var(--muted);
   margin: 6px 0 0;
+}
+.thumb-clip-info {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 0;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── OCR panel ───────────────────────────────────────────────────────── */

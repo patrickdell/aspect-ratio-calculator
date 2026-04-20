@@ -452,24 +452,33 @@
           </div>
         </div>
 
-        <!-- ── Thumbnail ─────────────────────────────────────────────── -->
+        <!-- ── Thumbnail clip ────────────────────────────────────────── -->
         <div id="thumb-section" class="thumb-section" style="display:none">
           <div class="thumb-section-header">
-            <span class="thumb-section-title">Thumbnail</span>
+            <span class="thumb-section-title">Thumbnail clip</span>
             <button id="thumb-capture-btn" class="export-btn-secondary">📸 Capture frame</button>
           </div>
+          <p class="thumb-intro">Navigate to any frame to position the crop, then export. The clip length is set by the <strong>In</strong> and <strong>Out</strong> points above.</p>
 
           <div id="thumb-editor" style="display:none">
             <div class="chips-label">Crop to ratio</div>
             <div class="chips-row" id="thumb-ratio-chips"></div>
 
             <canvas id="thumb-canvas" class="thumb-canvas"></canvas>
-            <p class="thumb-drag-hint">Drag the highlighted area to reposition the crop</p>
+            <p class="thumb-drag-hint">Drag the crop area to reposition</p>
+            <p id="thumb-clip-info" class="thumb-clip-info"></p>
 
-            <div class="export-bar">
-              <button class="chip" id="thumb-export-jpeg">Save JPEG</button>
-              <button class="chip" id="thumb-export-png">Save PNG</button>
-              <button class="chip" id="thumb-export-webp">Save WebP</button>
+            <div class="cmp-action-row">
+              <button id="thumb-export-btn" class="export-btn">Export thumbnail clip</button>
+            </div>
+
+            <div id="thumb-progress-wrap" class="cmp-progress-wrap" style="display:none">
+              <div class="cmp-progress-track">
+                <div id="thumb-progress-bar" class="cmp-progress-bar" style="width:0%"></div>
+              </div>
+              <div class="cmp-progress-meta">
+                <span id="thumb-progress-label">Recording…</span>
+              </div>
             </div>
           </div>
         </div>
